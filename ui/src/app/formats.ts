@@ -45,7 +45,7 @@ export const Formats: Format[] = [
   },
   {
     id: 'thumbnail',
-    text: 'Thumbnail (Test)',
+    text: 'Thumbnail',
     qualities: [
       { id: 'best', text: 'Best' }
     ],
