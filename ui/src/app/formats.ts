@@ -24,7 +24,7 @@ export const Formats: Format[] = [
   },
   {
     id: 'mp4',
-    text: 'MP4',
+    text: 'MP4 (Video)',
     qualities: [
       { id: 'best', text: 'Best' },
       { id: '1440', text: '1440p' },
@@ -35,7 +35,7 @@ export const Formats: Format[] = [
   },
   {
     id: 'mp3',
-    text: 'MP3',
+    text: 'MP3 (Audio)',
     qualities: [
       { id: 'best', text: 'Best' },
       { id: '320', text: '320 kbps' },
