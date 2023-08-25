@@ -7,6 +7,7 @@ import { map, Observable, of } from 'rxjs';
 import { Download, DownloadsService, Status } from './downloads.service';
 import { MasterCheckboxComponent } from './master-checkbox.component';
 import { Formats, Format, Quality } from './formats';
+import {KeyValue} from "@angular/common";
 
 @Component({
   selector: 'app-root',
@@ -20,6 +21,7 @@ export class AppComponent implements AfterViewInit {
   quality: string;
   format: string;
   folder: string;
+  customNamePrefix: string;
   addInProgress = false;
   darkMode: boolean;
   customDirs$: Observable<string[]>;
@@ -36,8 +38,8 @@ export class AppComponent implements AfterViewInit {
   faTimesCircle = faTimesCircle;
   faRedoAlt = faRedoAlt;
   faSun = faSun;
-  faMoon = faMoon;  
-  faDownload = faDownload;  
+  faMoon = faMoon;
+  faDownload = faDownload;
   faExternalLinkAlt = faExternalLinkAlt;
 
   constructor(public downloads: DownloadsService, private cookieService: CookieService) {
@@ -94,7 +96,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   isAudioType() {
-    return this.quality == 'audio' || this.format == 'mp3';
+    return this.quality == 'audio' || this.format == 'mp3'  || this.format == 'm4a' || this.format == 'opus' || this.format == 'wav'
   }
 
   getMatchingCustomDir() : Observable<string[]> {
@@ -154,15 +156,16 @@ export class AppComponent implements AfterViewInit {
     this.quality = exists ? this.quality : 'best'
   }
 
-  addDownload(url?: string, quality?: string, format?: string, folder?: string) {
+  addDownload(url?: string, quality?: string, format?: string, folder?: string, customNamePrefix?: string) {
     url = url ?? this.addUrl
     quality = quality ?? this.quality
     format = format ?? this.format
     folder = folder ?? this.folder
+    customNamePrefix = customNamePrefix ?? this.customNamePrefix
 
-    console.debug('Downloading: url='+url+' quality='+quality+' format='+format+' folder='+folder);
+    console.debug('Downloading: url='+url+' quality='+quality+' format='+format+' folder='+folder+' customNamePrefix='+customNamePrefix);
     this.addInProgress = true;
-    this.downloads.add(url, quality, format, folder).subscribe((status: Status) => {
+    this.downloads.add(url, quality, format, folder, customNamePrefix).subscribe((status: Status) => {
       if (status.status === 'error') {
         alert(`Error adding URL: ${status.msg}`);
       } else {
@@ -172,8 +175,8 @@ export class AppComponent implements AfterViewInit {
     });
   }
 
-  retryDownload(key: string, url: string, quality: string, format: string, folder: string) {
-    this.addDownload(url, quality, format, folder);
+  retryDownload(key: string, download: Download) {
+    this.addDownload(download.url, download.quality, download.format, download.folder, download.custom_name_prefix);
     this.downloads.delById('done', [key]).subscribe();
   }
 
@@ -204,5 +207,9 @@ export class AppComponent implements AfterViewInit {
     }
 
     return baseDir + encodeURIComponent(download.filename);
+  }
+
+  identifyDownloadRow(index: number, row: KeyValue<string, Download>) {
+    return row.key;
   }
 }
